@@ -1,0 +1,17 @@
+{
+  "name": "starlux_jackyfan",
+  "version": "1.0.0",
+  "description": "starlux_project",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "nodemon app.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "bcrypt": "^5.1.1",
+    "express": "^4.19.2"
+  }
+}
