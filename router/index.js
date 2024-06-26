@@ -1,9 +1,8 @@
 const express = require("express");
 const router = express.Router();
-const fs = require("fs");
 const user = require("./user");
 const flight = require("./flight");
-const ticket = require("./ticket");
+const booking = require('./booking');
 
 router.get("/", (req,res) => //設定根路由
 {
@@ -12,6 +11,6 @@ router.get("/", (req,res) => //設定根路由
 
 router.use("/user", user);
 router.use("/flight", flight);
-router.use("/ticket", ticket);
+router.use('/bookings', booking);
 
 module.exports = router;

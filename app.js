@@ -1,10 +1,8 @@
 const express = require('express');
 const app = express();
 const port = 3000;
-const fs = require('fs');
-const bcrypt = require('bcrypt');
 const router = require("./router");
-const mysql = require('mysql');
+const sequelize = require('./config/database');
 
 app.use(express.json());
 
@@ -12,8 +10,17 @@ app.get('/', (req, res) => {
   res.send('Hello, this is app.js!');
 });
 
-app.use("/router", router);
+app.use("/api", router);
 
-app.listen(port, () => {
-  console.log(`Server is running on port ${port}`);
-}); 
+(async () => {
+  try {
+    await sequelize.sync();
+    console.log('Database synchronized');
+
+    app.listen(port, () => {
+      console.log(`Server is running on port ${port}`);
+    });
+  } catch (error) {
+    console.error('Error starting server:', error);
+  }
+})();
