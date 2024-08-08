@@ -103,6 +103,26 @@ const bookingController = {
       res.status(500).json({ error: 'Error deleting booking' });
     }
   },
+
+  // 更新機票是否完成狀態
+  updateBookingStatus: async (flightId, newStatus) => {
+    try {
+      // 更新對應航班的所有訂票狀態
+      const [updatedRows] = await Booking.update(
+        { bookingStatus: newStatus },
+        { where: { flightId } } // 根據 flightId 更新所有相關的訂票
+      );
+
+      if (updatedRows === 0) {
+        console.log('No bookings found for this flight.');
+      } else {
+        console.log(`${updatedRows} bookings updated to status: ${newStatus}`);
+      }
+    } catch (error) {
+      console.error('Error updating booking status:', error);
+      throw error; // 可以根據需要選擇是否拋出錯誤
+    }
+  },
 };
 
 module.exports = bookingController;

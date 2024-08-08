@@ -39,9 +39,6 @@ const FlightModel = sequelize.define('Flight',
     flight_status: {
       type: DataTypes.STRING,
     },
-    cabin_class: {
-      type: DataTypes.STRING,
-    },
     price: {
       type: DataTypes.DECIMAL(10, 2),
     },

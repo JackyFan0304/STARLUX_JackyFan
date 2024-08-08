@@ -18,6 +18,19 @@ const UserModel = sequelize.define('User', {
             type: DataTypes.STRING,
             unique: true
         },
+        mileage: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+            defaultValue: 0 // 確保初始值為 0
+        },
+        createdAt: {
+        type: DataTypes.DATE,
+        defaultValue: DataTypes.NOW
+        },
+        updatedAt: {
+        type: DataTypes.DATE,
+        defaultValue: DataTypes.NOW
+        }
     },
     {  
         tableName: 'user',

@@ -30,6 +30,11 @@ const BookingModel = sequelize.define('Booking', {
   bookingDate: {
     type: DataTypes.DATE,
     allowNull: false
+  },
+  bookingStatus: {  // 新增的 booking_status 欄位
+    type: DataTypes.STRING,
+    allowNull: false,
+    defaultValue: 'Scheduled' // 設定預設值
   }
 }, {
   tableName: 'bookings',
