@@ -1,0 +1,7 @@
+USE starlux;
+CREATE TABLE User (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  user VARCHAR(255),
+  password VARCHAR(255),
+  email VARCHAR(255)
+);
