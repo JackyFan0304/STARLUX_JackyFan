@@ -11,6 +11,6 @@ router.get("/", (req,res) => //設定根路由
 
 router.use("/user", user);
 router.use("/flight", flight);
-router.use('/bookings', booking);
+router.use('/booking', booking);
 
 module.exports = router;

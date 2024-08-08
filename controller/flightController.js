@@ -1,6 +1,6 @@
 const { Flight } = require('../models');
 
-const checkFlights = async (req, res) => {
+const check = async (req, res) => {
   try {
     const checkFlight = await Flight.checkFlights(req.body);
     res.json(checkFlight);
@@ -10,7 +10,7 @@ const checkFlights = async (req, res) => {
   }
 };
 
-const createFlight = async (req, res) => {
+const create = async (req, res) => {
   try {
     const createFlight = await Flight.createFlight(req.body);
     res.status(201).json(createFlight);
@@ -21,6 +21,6 @@ const createFlight = async (req, res) => {
 };
 
 module.exports = {
-  checkFlights,
-  createFlight
+  check,
+  create
 };

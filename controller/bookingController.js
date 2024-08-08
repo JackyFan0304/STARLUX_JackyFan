@@ -3,41 +3,43 @@ const { Booking, User, Flight } = require('../models');
 const bookingController = {
   createBooking: async (req, res) => {
     try {
-      // 從請求中取得訂票資訊
-      const { userId, flightId, seatNumber } = req.body;
+      const { flightId, seatNumber} = req.body;
+      const userId = req.user.userId; // 從已驗證的用戶信息中獲取 userId
 
       // 建立新的訂票
-      const newBooking = await Booking.create({
-        userId,
-        flightId,
-        seatNumber,
-        bookingDate: new Date()
+      const create = await Booking.create({
+          userId,
+          flightId,
+          seatNumber,
+          bookingDate: new Date()
       });
 
-      res.status(201).json(newBooking);
+      res.status(201).json(create);
     } catch (error) {
-      console.error('Error creating booking:', error);
-      res.status(500).json({ error: 'Error creating booking' });
+        console.error('Error creating booking:', error);
+        res.status(500).json({ error: 'Error creating booking by bookingController' });
     }
   },
 
-  getBookings: async (req, res) => {
-    try {
-      // 取得所有訂票資訊
-      const bookings = await Booking.findAll({
-        include: [User, Flight]
-      });
-      res.json(bookings);
-    } catch (error) {
-      console.error('Error getting bookings:', error);
-      res.status(500).json({ error: 'Error getting bookings' });
-    }
-  },
+  // getBookings: async (req, res) => {
+  //   try {
+  //     // 取得所有訂票資訊
+  //     const bookings = await Booking.findAll({
+  //       include: [User, Flight]
+  //     });
+  //     res.json(bookings);
+  //   } catch (error) {
+  //     console.error('Error getting bookings:', error);
+  //     res.status(500).json({ error: 'Error getting bookings' });
+  //   }
+  // },
 
   getBookingById: async (req, res) => {
+    const userId = req.user.userId; // 確保用戶已登入
     try {
-      // 取得指定 ID 的訂票資訊
-      const booking = await Booking.findByPk(req.params.id, {
+      // 取得該用戶的指定 ID 的訂票資訊
+      const booking = await Booking.findOne({
+        where: { id: req.params.id, userId }, // 僅獲取該用戶的訂票
         include: [User, Flight]
       });
       if (!booking) {
@@ -51,17 +53,31 @@ const bookingController = {
   },
 
   updateBooking: async (req, res) => {
+    const userId = req.user.userId; // 確保用戶已登入
     try {
-      // 更新指定 ID 的訂票資訊
       const { seatNumber } = req.body;
+  
+      // 檢查 seatNumber 是否有效
+      if (!seatNumber) {
+        return res.status(400).json({ error: 'Seat number is required.' });
+      }
+  
+      // 更新指定 ID 的訂票資訊
       const [updatedRows] = await Booking.update(
         { seatNumber },
-        { where: { id: req.params.id } }
+        { where: { id: req.params.id, userId } } // 僅允許該用戶更新自己的訂票
       );
+  
       if (updatedRows === 0) {
-        return res.status(404).json({ error: 'Booking not found' });
+        return res.status(404).json({ error: 'Booking not found or not authorized to update.' });
       }
-      const updatedBooking = await Booking.findByPk(req.params.id);
+  
+      // 獲取更新後的訂票資訊
+      const updatedBooking = await Booking.findOne({
+        where: { id: req.params.id, userId }, // 確保獲取的是該用戶的訂票
+        include: [User, Flight] // 如果需要的話，可以包括 User 和 Flight 資訊
+      });
+  
       res.json(updatedBooking);
     } catch (error) {
       console.error('Error updating booking:', error);
@@ -70,20 +86,23 @@ const bookingController = {
   },
 
   deleteBooking: async (req, res) => {
+    const userId = req.user.userId; // 確保用戶已登入
     try {
       // 刪除指定 ID 的訂票
       const deletedRows = await Booking.destroy({
-        where: { id: req.params.id }
+        where: { id: req.params.id, userId } // 僅允許該用戶刪除自己的訂票
       });
+  
       if (deletedRows === 0) {
-        return res.status(404).json({ error: 'Booking not found' });
+        return res.status(404).json({ error: 'Booking not found or not authorized to delete.' });
       }
-      res.json({ message: 'Booking deleted' });
+  
+      res.json({ message: 'Booking deleted successfully' });
     } catch (error) {
       console.error('Error deleting booking:', error);
       res.status(500).json({ error: 'Error deleting booking' });
     }
-  }
+  },
 };
 
 module.exports = bookingController;

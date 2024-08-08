@@ -45,20 +45,20 @@ const FlightModel = sequelize.define('Flight',
     price: {
       type: DataTypes.DECIMAL(10, 2),
     },
-    flight_cabin_class_id: {
-      type: DataTypes.INTEGER,
-      references: {
-        model: 'FlightCabinClass',
-        key: 'cabin_class_id',
-      },
-    },
-    flight_price_range_id: {
-      type: DataTypes.INTEGER,
-      references: {
-        model: 'FlightPriceRange',
-        key: 'price_range_id',
-      },
-    },
+    // flight_cabin_class_id: {
+    //   type: DataTypes.INTEGER,
+    //   references: {
+    //     model: 'FlightCabinClass',
+    //     key: 'cabin_class_id',
+    //   },
+    // },
+    // flight_price_range_id: {
+    //   type: DataTypes.INTEGER,
+    //   references: {
+    //     model: 'FlightPriceRange',
+    //     key: 'price_range_id',
+    //   },
+    // },
   },
   {
     tableName: "flight",
@@ -79,15 +79,14 @@ FlightModel.createFlight = async (flightData) => {
 FlightModel.checkFlights = async (flightData) => {
   try {
     const checkFlight = await FlightModel.findAll({
-      attributes: ['flight_id', 'flight_number', 'departure_city', 'destination_city', 'departure_date', 'arrival_date', 'departure_time', 'arrival_time', 'cabin_class'],
+      attributes: ['flight_id', 'flight_number', 'departure_city', 'destination_city', 'departure_date', 'arrival_date', 'departure_time', 'arrival_time'],
       where: {
         departure_city: flightData.departure_city,
         destination_city: flightData.destination_city,
         departure_date: flightData.departure_date,
         arrival_date: flightData.arrival_date,
         departure_time: flightData.departure_time,
-        arrival_time: flightData.arrival_time,
-        cabin_class: flightData.cabin_class
+        arrival_time: flightData.arrival_time
       }            
     });
     return checkFlight;

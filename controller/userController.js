@@ -1,10 +1,9 @@
 const { User } = require('../models');
-const sequelize = require('../config/database');
-
-// User.sync();
-const results = [];
 
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
+
+const secretKey = process.env.JWT_SECRET_KEY;
 
 const register = async (req, res) => {
     try {
@@ -21,15 +20,18 @@ const register = async (req, res) => {
         email
     });
 
-    // 4. 回傳新建立的使用者資訊
-    res.json(newUser);
+    // 4. 生成 JWT
+    const token = jwt.sign({ userId: newUser.id, user: newUser.user }, secretKey, { expiresIn: '1h' });
+
+    // 5. 回傳新建立的使用者資訊
+    res.json({ user: newUser, token });
     } catch (error) {
         console.error("Error creating user:", error);
         res.status(500).send("Error creating user");
     }
 };
 
-const login = async (req, res) => {
+const login = async (req, res) => {    
     try {
         // 1. 從請求中取得使用者的登入資訊
         const { user, password } = req.body;
@@ -54,8 +56,11 @@ const login = async (req, res) => {
         return res.status(401).json({ error: 'Invalid username or password' });
         }
 
-        // 6. 如果使用者和密碼都正確,回傳使用者資訊
-        res.status(200).json({ message: 'Login successful', user: foundUser });
+        // 6. 如果使用者和密碼都正確,生成 JWT
+        const token = jwt.sign({ userId: foundUser.id, user: foundUser.user }, secretKey, { expiresIn: '1h' });
+
+        // 7. 回傳使用者資訊和 JWT
+        res.status(200).json({ message: 'Login successful', user: foundUser, token });
     } catch (error) {
         console.error('Error logging in:', error);
         res.status(500).json({ error: 'Error logging in' });
