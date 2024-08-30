@@ -21,18 +21,29 @@ const bookingController = {
     }
   },
 
-  // getBookings: async (req, res) => {
-  //   try {
-  //     // 取得所有訂票資訊
-  //     const bookings = await Booking.findAll({
-  //       include: [User, Flight]
-  //     });
-  //     res.json(bookings);
-  //   } catch (error) {
-  //     console.error('Error getting bookings:', error);
-  //     res.status(500).json({ error: 'Error getting bookings' });
-  //   }
-  // },
+  getBookings: async (req, res) => {
+    const userId = req.user.userId; // 確保用戶已登入
+    try {
+      // 取得該用戶的所有訂票資訊
+      const bookings = await Booking.findAll({
+        where: { userId }, // 僅獲取該用戶的訂票
+        include: [{
+          model: Flight,
+          attributes: ['flight_number', 'departure_city', 'destination_city', 'departure_time', 'arrival_time'] // 僅獲取指定欄位
+        }],
+      });
+  
+      if (bookings.length === 0) {
+        return res.status(404).json({ error: 'No bookings found for this user' });
+      }
+      // 從 bookings 陣列中提取所需的 Flight 資訊
+      const result = bookings.map(booking => booking.Flight); // 僅返回 Flight 區塊
+      res.json(result);
+    } catch (error) {
+      console.error('Error getting bookings:', error);
+      res.status(500).json({ error: 'Error getting bookings' });
+    }
+  },
 
   getBookingById: async (req, res) => {
     const userId = req.user.userId; // 確保用戶已登入
